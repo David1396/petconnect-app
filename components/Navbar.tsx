@@ -6,6 +6,7 @@ export default function Navbar() {
       <div className="container mx-auto flex gap-6">
         <Link href="/">Inicio</Link>
         <Link href="/mascotas">Mascotas</Link>
+        <Link href="/perros">Perros API</Link>
         <Link href="/login">Login</Link>
         <Link href="/register">Registro</Link>
       </div>
