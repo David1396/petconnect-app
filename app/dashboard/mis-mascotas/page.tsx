@@ -9,6 +9,7 @@ interface Mascota {
   nombre: string;
   raza: string;
   edad: number;
+  imagen: string;
 }
 
 export default function MisMascotasPage() {
@@ -58,51 +59,78 @@ export default function MisMascotasPage() {
     }
 
     setMascotas(
-      mascotas.filter((mascota) => mascota.id !== id)
+      mascotas.filter(
+        (mascota) => mascota.id !== id
+      )
     );
 
     alert("Mascota eliminada correctamente");
   }
 
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold mb-6">
-        Mis Mascotas
-      </h1>
+    <main className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-gray-800 mb-8">
+          Mis Mascotas
+        </h1>
 
-      <div className="space-y-4">
-        {mascotas.map((mascota) => (
-          <div
-            key={mascota.id}
-            className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
-          >
-            <div>
-              <h2 className="font-bold text-black">
-                {mascota.nombre}
-              </h2>
-
-              <p className="text-gray-600">
-                {mascota.raza}
-              </p>
-            </div>
-
-            <div className="flex gap-2">
-              <Link href={`/dashboard/editar-mascota/${mascota.id}`} 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                Editar
-              </Link>
-
-              <button
-                onClick={() =>
-                  eliminarMascota(mascota.id)
-                }
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-              >
-                Eliminar
-              </button>
-            </div>
+        {mascotas.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <p className="text-gray-600">
+              Aún no has publicado mascotas.
+            </p>
           </div>
-        ))}
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mascotas.map((mascota) => (
+              <div
+                key={mascota.id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden"
+              >
+                <img
+                  src={
+                    mascota.imagen ||
+                    "https://placehold.co/600x400"
+                  }
+                  alt={mascota.nombre}
+                  className="w-full h-56 object-cover"
+                />
+
+                <div className="p-5">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    {mascota.nombre}
+                  </h2>
+
+                  <p className="text-gray-600 mt-1">
+                    Raza: {mascota.raza}
+                  </p>
+
+                  <p className="text-gray-500 mt-1">
+                    {mascota.edad} años
+                  </p>
+
+                  <div className="flex gap-2 mt-5">
+                    <Link
+                      href={`/dashboard/editar-mascota/${mascota.id}`}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg font-medium transition"
+                    >
+                      Editar
+                    </Link>
+
+                    <button
+                      onClick={() =>
+                        eliminarMascota(mascota.id)
+                      }
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-medium transition"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

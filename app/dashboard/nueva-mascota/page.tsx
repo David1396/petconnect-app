@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function NuevaMascotaPage() {
+  const router = useRouter();
+
   const [nombre, setNombre] = useState("");
   const [raza, setRaza] = useState("");
   const [edad, setEdad] = useState("");
@@ -40,19 +43,13 @@ export default function NuevaMascotaPage() {
       return;
     }
 
-    alert("Mascota creada correctamente");
-
-    setNombre("");
-    setRaza("");
-    setEdad("");
-    setDescripcion("");
-    setImagen("");
+    router.push("/dashboard/mis-mascotas");
   }
 
   return (
     <main className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-xl mx-auto bg-white p-8 rounded-xl shadow">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+      <div className="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h1 className="text-4xl font-bold text-gray-800 mb-6">
           Nueva Mascota
         </h1>
 
@@ -67,7 +64,7 @@ export default function NuevaMascotaPage() {
             onChange={(e) =>
               setNombre(e.target.value)
             }
-            className="w-full p-3 border rounded text-black"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black"
             required
           />
 
@@ -78,7 +75,7 @@ export default function NuevaMascotaPage() {
             onChange={(e) =>
               setRaza(e.target.value)
             }
-            className="w-full p-3 border rounded text-black"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black"
             required
           />
 
@@ -89,7 +86,7 @@ export default function NuevaMascotaPage() {
             onChange={(e) =>
               setEdad(e.target.value)
             }
-            className="w-full p-3 border rounded text-black"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black"
             required
           />
 
@@ -100,7 +97,7 @@ export default function NuevaMascotaPage() {
             onChange={(e) =>
               setImagen(e.target.value)
             }
-            className="w-full p-3 border rounded text-black"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black"
           />
 
           <textarea
@@ -109,12 +106,13 @@ export default function NuevaMascotaPage() {
             onChange={(e) =>
               setDescripcion(e.target.value)
             }
-            className="w-full p-3 border rounded text-black"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black"
+            rows={4}
           />
 
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-lg"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition"
           >
             Crear Mascota
           </button>
