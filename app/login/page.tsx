@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const router = useRouter();
 
   async function handleLogin(
     e: React.FormEvent<HTMLFormElement>
@@ -22,10 +25,10 @@ export default function LoginPage() {
       return;
     }
 
-    alert("Inicio de sesión exitoso");
-
     setEmail("");
     setPassword("");
+
+    router.push("/dashboard");
   }
 
   return (
