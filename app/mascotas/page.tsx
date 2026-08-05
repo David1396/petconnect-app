@@ -1,16 +1,19 @@
-"use client";
-
-import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 import MascotaCard from "@/components/MascotaCard";
-import SearchBar from "@/components/SearchBar";
-import { mascotas } from "@/data/mascotas";
 
-export default function MascotasPage() {
-  const [busqueda, setBusqueda] = useState("");
+export default async function MascotasPage() {
+  const { data: mascotas, error } = await supabase
+    .from("mascotas")
+    .select("*")
+    .order("id", { ascending: false });
 
-  const mascotasFiltradas = mascotas.filter((mascota) =>
-    mascota.nombre.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  if (error) {
+    return (
+      <main className="p-8">
+        <h1>Error al cargar mascotas</h1>
+      </main>
+    );
+  }
 
   return (
     <main className="p-8">
@@ -18,13 +21,8 @@ export default function MascotasPage() {
         Mascotas Disponibles
       </h1>
 
-      <SearchBar
-        valor={busqueda}
-        onChange={setBusqueda}
-      />
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mascotasFiltradas.map((mascota) => (
+        {mascotas?.map((mascota) => (
           <MascotaCard
             key={mascota.id}
             mascota={mascota}

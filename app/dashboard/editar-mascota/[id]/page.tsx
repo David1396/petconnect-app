@@ -1,59 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useParams, useRouter } from "next/navigation";
 
-export default function NuevaMascotaPage() {
+export default function EditarMascotaPage() {
+  const params = useParams();
+  const router = useRouter();
+
   const [nombre, setNombre] = useState("");
   const [raza, setRaza] = useState("");
   const [edad, setEdad] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  const [descripcion, setDescripcion] =
+    useState("");
   const [imagen, setImagen] = useState("");
+
+  useEffect(() => {
+    async function cargarMascota() {
+      const { data } = await supabase
+        .from("mascotas")
+        .select("*")
+        .eq("id", params.id)
+        .single();
+
+      if (data) {
+        setNombre(data.nombre);
+        setRaza(data.raza);
+        setEdad(data.edad.toString());
+        setDescripcion(data.descripcion || "");
+        setImagen(data.imagen || "");
+      }
+    }
+
+    cargarMascota();
+  }, [params.id]);
 
   async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      alert("Debes iniciar sesión");
-      return;
-    }
-
     const { error } = await supabase
       .from("mascotas")
-      .insert({
+      .update({
         nombre,
         raza,
         edad: Number(edad),
         descripcion,
         imagen,
-        refugio_id: user.id,
-      });
+      })
+      .eq("id", params.id);
 
     if (error) {
       alert(error.message);
       return;
     }
 
-    alert("Mascota creada correctamente");
+    alert("Mascota actualizada");
 
-    setNombre("");
-    setRaza("");
-    setEdad("");
-    setDescripcion("");
-    setImagen("");
+    router.push("/dashboard/mis-mascotas");
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
+    <main className="p-8">
       <div className="max-w-xl mx-auto bg-white p-8 rounded-xl shadow">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          Nueva Mascota
+        <h1 className="text-3xl font-bold mb-6">
+          Editar Mascota
         </h1>
 
         <form
@@ -62,40 +74,33 @@ export default function NuevaMascotaPage() {
         >
           <input
             type="text"
-            placeholder="Nombre"
             value={nombre}
             onChange={(e) =>
               setNombre(e.target.value)
             }
             className="w-full p-3 border rounded text-black"
-            required
           />
 
           <input
             type="text"
-            placeholder="Raza"
             value={raza}
             onChange={(e) =>
               setRaza(e.target.value)
             }
             className="w-full p-3 border rounded text-black"
-            required
           />
 
           <input
             type="number"
-            placeholder="Edad"
             value={edad}
             onChange={(e) =>
               setEdad(e.target.value)
             }
             className="w-full p-3 border rounded text-black"
-            required
           />
 
           <input
             type="text"
-            placeholder="URL de imagen"
             value={imagen}
             onChange={(e) =>
               setImagen(e.target.value)
@@ -104,7 +109,6 @@ export default function NuevaMascotaPage() {
           />
 
           <textarea
-            placeholder="Descripción"
             value={descripcion}
             onChange={(e) =>
               setDescripcion(e.target.value)
@@ -114,9 +118,9 @@ export default function NuevaMascotaPage() {
 
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-lg"
+            className="w-full bg-yellow-500 text-white py-3 rounded"
           >
-            Crear Mascota
+            Guardar Cambios
           </button>
         </form>
       </div>
