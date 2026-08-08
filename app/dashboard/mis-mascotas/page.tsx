@@ -10,6 +10,7 @@ interface Mascota {
   raza: string;
   edad: number;
   imagen: string;
+  adoptada: boolean;
 }
 
 export default function MisMascotasPage() {
@@ -109,22 +110,42 @@ export default function MisMascotasPage() {
                     {mascota.edad} años
                   </p>
 
-                  <div className="flex gap-2 mt-5">
-                    <Link
-                      href={`/dashboard/editar-mascota/${mascota.id}`}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg font-medium transition"
-                    >
-                      Editar
-                    </Link>
+                  <div className="mt-3">
+                    {mascota.adoptada ? (
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        ✅ Adoptada
+                      </span>
+                    ) : (
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        🟢 Disponible
+                      </span>
+                    )}
+                  </div>
 
-                    <button
-                      onClick={() =>
-                        eliminarMascota(mascota.id)
-                      }
-                      className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-medium transition"
-                    >
-                      Eliminar
-                    </button>
+                  <div className="flex gap-2 mt-5">
+                    {!mascota.adoptada ? (
+                      <>
+                        <Link
+                          href={`/dashboard/editar-mascota/${mascota.id}`}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg font-medium transition"
+                        >
+                          Editar
+                        </Link>
+
+                        <button
+                          onClick={() =>
+                            eliminarMascota(mascota.id)
+                          }
+                          className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-medium transition"
+                        >
+                          Eliminar
+                        </button>
+                      </>
+                    ) : (
+                      <div className="w-full text-center bg-green-100 text-green-800 py-2 rounded-lg font-medium">
+                        ✅ Mascota adoptada
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

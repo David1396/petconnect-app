@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import SolicitarAdopcion from "@/components/SolicitarAdopcion";
 
 interface PageProps {
   params: Promise<{
@@ -94,9 +95,7 @@ export default async function MascotaDetallePage({
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition">
-                  🐾 Solicitar Adopción
-                </button>
+                <SolicitarAdopcion mascotaId={mascota.id} />
 
                 <Link
                   href="/mascotas"

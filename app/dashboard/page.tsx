@@ -49,6 +49,31 @@ const [cantidadSolicitudes, setCantidadSolicitudes] = useState(0);
         setCantidadMascotas(count || 0);
       }
 
+        const { data: mascotasRefugio } = await supabase
+          .from("mascotas")
+          .select("id")
+          .eq("refugio_id", user.id);
+
+        if (mascotasRefugio?.length) {
+          const idsMascotas = mascotasRefugio.map(
+            (m) => m.id
+          );
+
+          const {
+            count: solicitudesRecibidas,
+          } = await supabase
+            .from("solicitudes")
+            .select("*", {
+              count: "exact",
+              head: true,
+            })
+            .in("mascota_id", idsMascotas);
+
+          setCantidadSolicitudes(
+            solicitudesRecibidas || 0
+          );
+        }
+
       if (perfilData.rol === "adoptante") {
         const { count: mascotasDisponibles } =
           await supabase
@@ -142,7 +167,7 @@ const [cantidadSolicitudes, setCantidadSolicitudes] = useState(0);
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-3 gap-6">
                 <Link className="bg-green-600 text-white p-6 rounded-xl shadow hover:bg-green-700 transition" href="/dashboard/nueva-mascota">
                   <h2 className="text-2xl font-bold">
                     ➕ Publicar Mascota
@@ -160,6 +185,16 @@ const [cantidadSolicitudes, setCantidadSolicitudes] = useState(0);
 
                   <p className="mt-2">
                     Administrar mascotas publicadas.
+                  </p>
+                </Link>
+
+                <Link className="bg-orange-600 text-white p-6 rounded-xl shadow hover:bg-orange-700 transition" href="/dashboard/solicitudes-recibidas">
+                  <h2 className="text-2xl font-bold">
+                    📨 Solicitudes
+                  </h2>
+
+                  <p className="mt-2">
+                    Revisar solicitudes recibidas.
                   </p>
                 </Link>
               </div>
@@ -214,7 +249,7 @@ const [cantidadSolicitudes, setCantidadSolicitudes] = useState(0);
                   </p>
                 </Link>
 
-                <Link className="bg-orange-500 text-white p-6 rounded-xl shadow hover:bg-orange-600 transition" href="/dashboard/mis-solicitudes">
+                <Link className="bg-orange-500 text-white p-6 rounded-xl shadow hover:bg-orange-600 transition" href="/dashboard/solicitudes">
                   <h2 className="text-2xl font-bold">
                     📨 Mis Solicitudes
                   </h2>

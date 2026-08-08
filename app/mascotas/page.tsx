@@ -5,6 +5,7 @@ export default async function MascotasPage() {
   const { data: mascotas } = await supabase
     .from("mascotas")
     .select("*")
+    .eq("adoptada", false)
     .order("id", { ascending: false });
 
   return (
