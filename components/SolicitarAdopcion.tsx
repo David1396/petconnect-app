@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 interface Props {
   mascotaId: number;
@@ -13,6 +14,7 @@ export default function SolicitarAdopcion({
 }: Props) {
   const [rol, setRol] = useState("");
   const [cargando, setCargando] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     async function cargarUsuario() {
@@ -61,7 +63,7 @@ export default function SolicitarAdopcion({
       return;
     }
 
-    alert("Solicitud enviada correctamente");
+    router.push("/dashboard/solicitudes");
   }
 
   if (cargando) {

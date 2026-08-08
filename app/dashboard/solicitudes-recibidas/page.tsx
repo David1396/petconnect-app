@@ -9,15 +9,13 @@ interface Solicitud {
   mascota_id: number;
   mascota_nombre: string;
   mascota_raza: string;
+  mascota_imagen: string;
   adoptante_nombre: string;
   created_at: string;
 }
 
 export default function SolicitudesRecibidasPage() {
-  const [solicitudes, setSolicitudes] = useState<
-    Solicitud[]
-  >([]);
-
+  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +31,7 @@ export default function SolicitudesRecibidasPage() {
 
       const { data: mascotasRefugio } = await supabase
         .from("mascotas")
-        .select("id,nombre,raza")
+        .select("id,nombre,raza,imagen")
         .eq("refugio_id", user.id);
 
       if (!mascotasRefugio?.length) {
@@ -41,9 +39,7 @@ export default function SolicitudesRecibidasPage() {
         return;
       }
 
-      const idsMascotas = mascotasRefugio.map(
-        (m) => m.id
-      );
+      const idsMascotas = mascotasRefugio.map((m) => m.id);
 
       const { data: solicitudesData } = await supabase
         .from("solicitudes")
@@ -56,11 +52,7 @@ export default function SolicitudesRecibidasPage() {
       }
 
       const idsAdoptantes = [
-        ...new Set(
-          solicitudesData.map(
-            (s) => s.adoptante_id
-          )
-        ),
+        ...new Set(solicitudesData.map((s) => s.adoptante_id)),
       ];
 
       const { data: adoptantes } = await supabase
@@ -68,30 +60,26 @@ export default function SolicitudesRecibidasPage() {
         .select("id,nombre")
         .in("id", idsAdoptantes);
 
-      const solicitudesFormateadas =
-        solicitudesData.map((solicitud) => {
-          const mascota = mascotasRefugio.find(
-            (m) => m.id === solicitud.mascota_id
-          );
+      const solicitudesFormateadas = solicitudesData.map((solicitud) => {
+        const mascota = mascotasRefugio.find(
+          (m) => m.id === solicitud.mascota_id
+        );
 
-          const adoptante = adoptantes?.find(
-            (a) => a.id === solicitud.adoptante_id
-          );
+        const adoptante = adoptantes?.find(
+          (a) => a.id === solicitud.adoptante_id
+        );
 
-          return {
-            id: solicitud.id,
-            mascota_id: solicitud.mascota_id,
-            estado: solicitud.estado,
-            mascota_nombre:
-              mascota?.nombre || "Mascota",
-            mascota_raza:
-              mascota?.raza || "",
-            adoptante_nombre:
-              adoptante?.nombre ||
-              "Usuario desconocido",
-            created_at: solicitud.created_at,
-          };
-        });
+        return {
+          id: solicitud.id,
+          mascota_id: solicitud.mascota_id,
+          estado: solicitud.estado,
+          mascota_nombre: mascota?.nombre || "Mascota",
+          mascota_raza: mascota?.raza || "",
+          mascota_imagen: mascota?.imagen || "",
+          adoptante_nombre: adoptante?.nombre || "Usuario desconocido",
+          created_at: solicitud.created_at,
+        };
+      });
 
       setSolicitudes(solicitudesFormateadas);
       setLoading(false);
@@ -104,40 +92,35 @@ export default function SolicitudesRecibidasPage() {
     id: number,
     mascotaId: number,
     estado: string
-    ) {
+  ) {
     const { error } = await supabase
-        .from("solicitudes")
-        .update({ estado })
-        .eq("id", id);
+      .from("solicitudes")
+      .update({ estado })
+      .eq("id", id);
 
     if (error) {
-        alert(error.message);
-        return;
+      alert(error.message);
+      return;
     }
 
     if (estado === "aceptada") {
-        const { error: mascotaError } =
-        await supabase
-            .from("mascotas")
-            .update({
-            adoptada: true,
-            })
-            .eq("id", mascotaId);
+      const { error: mascotaError } = await supabase
+        .from("mascotas")
+        .update({
+          adoptada: true,
+        })
+        .eq("id", mascotaId);
 
-        if (mascotaError) {
+      if (mascotaError) {
         alert(mascotaError.message);
         return;
-        }
+      }
     }
 
-  setSolicitudes((prev) =>
-    prev.map((s) =>
-      s.id === id
-        ? { ...s, estado }
-        : s
-    )
-  );
-}
+    setSolicitudes((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, estado } : s))
+    );
+  }
 
   function colorEstado(estado: string) {
     switch (estado) {
@@ -168,13 +151,12 @@ export default function SolicitudesRecibidasPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-gray-600">
-          Cargando solicitudes...
-        </p>
+        <p className="text-gray-600">Cargando solicitudes...</p>
       </main>
     );
   }
-    return (
+
+  return (
     <main className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
@@ -183,15 +165,13 @@ export default function SolicitudesRecibidasPage() {
           </h1>
 
           <p className="text-gray-600 mb-8">
-            Gestiona las solicitudes de adopción
-            recibidas para tus mascotas.
+            Gestiona las solicitudes de adopción recibidas para tus mascotas.
           </p>
 
           {solicitudes.length === 0 ? (
             <div className="bg-gray-50 border rounded-xl p-6">
               <p className="text-gray-600">
-                No has recibido solicitudes
-                todavía.
+                No has recibido solicitudes todavía.
               </p>
             </div>
           ) : (
@@ -201,70 +181,74 @@ export default function SolicitudesRecibidasPage() {
                   key={solicitud.id}
                   className="bg-gray-50 border rounded-xl p-6"
                 >
-                  <h2 className="text-xl font-bold text-gray-800">
-                    {solicitud.mascota_nombre}
-                  </h2>
+                  <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+                    <img
+                      src={solicitud.mascota_imagen}
+                      alt={solicitud.mascota_nombre}
+                      className="w-45 h-45 rounded-lg object-cover"
+                    />
 
-                  <p className="text-gray-600 mt-1">
-                    Raza:{" "}
-                    {solicitud.mascota_raza}
-                  </p>
+                    <div className="flex-1">
+                      <h2 className="text-xl font-bold text-gray-800">
+                        {solicitud.mascota_nombre}
+                      </h2>
 
-                  <p className="text-gray-600 mt-2">
-                    Adoptante:{" "}
-                    <strong>
-                      {solicitud.adoptante_nombre}
-                    </strong>
-                  </p>
+                      <p className="text-gray-600 mt-1">
+                        Raza: {solicitud.mascota_raza}
+                      </p>
 
-                  <p className="text-gray-500 text-sm mt-2">
-                    Solicitud enviada el{" "}
-                    {new Date(
-                      solicitud.created_at
-                    ).toLocaleDateString()}
-                  </p>
+                      <p className="text-gray-600 mt-2">
+                        Adoptante:{" "}
+                        <strong>{solicitud.adoptante_nombre}</strong>
+                      </p>
 
-                  <div className="mt-4 flex items-center gap-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${colorEstado(
-                        solicitud.estado
-                      )}`}
-                    >
-                      {textoEstado(
-                        solicitud.estado
-                      )}
-                    </span>
+                      <p className="text-gray-500 text-sm mt-2">
+                        Solicitud enviada el{" "}
+                        {new Date(
+                          solicitud.created_at
+                        ).toLocaleDateString()}
+                      </p>
 
-                    {solicitud.estado ===
-                      "pendiente" && (
-                      <>
-                        <button
-                          onClick={() =>
-                            actualizarEstado(
-                                solicitud.id,
-                                solicitud.mascota_id,
-                                "aceptada"
-                            )
-                            }
-                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                      <div className="mt-4 flex items-center gap-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${colorEstado(
+                            solicitud.estado
+                          )}`}
                         >
-                          Aceptar
-                        </button>
+                          {textoEstado(solicitud.estado)}
+                        </span>
 
-                        <button
-                          onClick={() =>
-                            actualizarEstado(
-                              solicitud.id,
-                                solicitud.mascota_id,
-                              "rechazada"
-                            )
-                          }
-                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
-                        >
-                          Rechazar
-                        </button>
-                      </>
-                    )}
+                        {solicitud.estado === "pendiente" && (
+                          <>
+                            <button
+                              onClick={() =>
+                                actualizarEstado(
+                                  solicitud.id,
+                                  solicitud.mascota_id,
+                                  "aceptada"
+                                )
+                              }
+                              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+                            >
+                              Aceptar
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                actualizarEstado(
+                                  solicitud.id,
+                                  solicitud.mascota_id,
+                                  "rechazada"
+                                )
+                              }
+                              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+                            >
+                              Rechazar
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
