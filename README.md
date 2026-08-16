@@ -6,20 +6,38 @@ La aplicación conecta refugios que buscan un hogar para sus animales con person
 
 ## 🌐 Demo
 
-Demo en vivo: Pendiente de despliegue en Vercel
+Demo en vivo: https://petconnect-app-rust.vercel.app/
+
+---
+
+## Credenciales de prueba
+
+### Adoptante
+
+correo: juan2@test.com
+contraseña: 12345678
+
+### Refugio
+
+correo: patitas@test.com
+contraseña: 12345678
 
 ---
 
 ## 📸 Capturas de pantalla
 
 - Página de Inicio
+![alt text](image.png)
 - Catálogo de Mascotas
+![alt text](image-5.png)
 - Detalle de Mascota
+![alt text](image-4.png)
 - Dashboard de Adoptante
+![alt text](image-2.png)
 - Dashboard de Refugio
+![alt text](image-3.png)
 - Enciclopedia Canina
-
-*(Agregar capturas antes de la entrega final.)*
+![alt text](image-1.png)
 
 ---
 
